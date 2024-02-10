@@ -1,3 +1,4 @@
+```js
 /**
  * Alias for `document.querySelector`.
  * @param {string} s 
@@ -6,7 +7,11 @@
 function $(s) {
     return document.querySelector(s);
 }
-
+```
+```js
+function $(e){return document.querySelector(e)}
+```
+```js
 /**
  * Encode the contents of a form element for use as POST payload.
  * Only supported by modern browsers.
@@ -17,7 +22,11 @@ function encForm(form) {
     // @ts-ignore
     return new URLSearchParams(new FormData(form));
 }
-
+```
+```js
+function encForm(n){return new URLSearchParams(new FormData(n))}
+```
+```js
 /**
  * Encode form inputs into query string.
  * IE8+ compatible.
@@ -39,7 +48,11 @@ function _encForm(form, keys) {
     }
     return s;
 }
-
+```
+```js
+function _encForm(a,l){for(var o,e,t="",n=0;n<l.length;n++){e=l[n],typeof e=="string"?o=a.querySelectorAll('[name="'+e+'"]'):(e=e[0],o=[{value:e[1]}]);for(var r=0;r<o.length;r++)t+=(n+r?"&":"?")+encodeURIComponent(e)+"="+encodeURIComponent(o[n].value)}return t}
+```
+```js
 /**
  * @typedef Context
  * @type {object}
@@ -89,7 +102,11 @@ function swap(req, target, swapMethod, f) {
     };
     xhr.send(data);
 }
-
+```
+```js
+function swap(i,r,e,f){var l;typeof i=="object"&&(l=i[1],i=i[0]),e||(e="innerHTML");var t=new XMLHttpRequest,n=i.split(" ");t.open(n[1]?n[0]:"GET",n[1]||n[0]),t.onload=function(){var a={xhr:t,el:r,call:function(s){s?s(this):this.el&&(e.match("(inner|outer)HTML")?this.el[e]=this.xhr.responseText:e.match("(after|before)(begin|end)")?this.el.insertAdjacentHTML(e,this.xhr.responseText):e=="delete"&&this.el.parentNode&&this.el.parentNode.removeChild(this.el))}};a.call(f)},t.send(l)}
+```
+```js
 /**
  * Do not continue if request was not successful.
  * @param {((ctx: Context) => void)} [f]
@@ -101,7 +118,11 @@ function nothingIfError(f) {
         ctx.call(f);
     }
 }
-
+```
+```js
+function nothingIfError(r){return function(n){n.xhr.status==200&&n.call(r)}}
+```
+```js
 /**
  * Wait a specified time before swapping.
  * @param {number} ms
@@ -113,7 +134,11 @@ function delay(ms, f) {
         setTimeout(ctx.call, ms, f);
     }
 }
-
+```
+```js
+function delay(n,t){return function(e){setTimeout(e.call,n,t)}}
+```
+```js
 /**
  * Add 'settling' class to target element for a specified time after swapping.
  * @param {number} ms
@@ -129,7 +154,11 @@ function useSettle(ms, f) {
         }
     }
 }
-
+```
+```js
+function useSettle(l,s){return function(e){e.call(s),e.el&&(e.el.classList.add("settling"),setTimeout(e.el.classList.remove,l,"settling"))}}
+```
+```js
 /**
  * Changes the document's title when the response contains a `title` tag.
  * @param {((ctx: Context) => void)} [f]
@@ -149,3 +178,7 @@ function useTitle(f) {
         }
     }
 }
+```
+```js
+function useTitle(r){return function(n){var t=n.el&&n.el.parentElement;if(n.call(r),t){var e=t.querySelector("title");e&&(e.textContent&&(document.title=e.textContent),e.parentNode.removeChild(e))}}}
+```
