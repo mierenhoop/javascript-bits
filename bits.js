@@ -99,7 +99,7 @@ function nothingIfError(f) {
     return function (ctx) {
         if (ctx.xhr.status != 200) return;
         ctx.call(f);
-    }
+    };
 }
 
 /**
@@ -111,7 +111,7 @@ function nothingIfError(f) {
 function delay(ms, f) {
     return function (ctx) {
         setTimeout(ctx.call, ms, f);
-    }
+    };
 }
 
 /**
@@ -120,14 +120,46 @@ function delay(ms, f) {
  * @param {((ctx: Context) => void)} [f]
  * @returns {(ctx: Context) => void}
  */
-function useSettle(ms, f) {
+function useSettling(ms, f) {
     return function (ctx) {
         ctx.call(f);
         if (ctx.el) {
             ctx.el.classList.add("settling");
             setTimeout(ctx.el.classList.remove, ms, "settling");
         }
-    }
+    };
+}
+
+/**
+ * Add 'settling' class to target element for a specified time before swapping.
+ * @param {number} ms
+ * @param {((ctx: Context) => void)} [f]
+ * @returns {(ctx: Context) => void}
+ */
+function useSwapping(ms, f) {
+    return function (ctx) {
+        if (ctx.el)
+            ctx.el.classList.add("swapping");
+        ctx.call(f);
+        if (ctx.el)
+            setTimeout(ctx.el.classList.remove, ms, "swapping");
+    };
+}
+
+/**
+ * Gives a class `indicator` to an element while a request is ongoing.
+ * @param {HTMLElement|null} [el]
+ * @param {((ctx: Context) => void)} [f]
+ * @returns {(ctx: Context) => void}
+ */
+function useIndicator(el, f) {
+    return function (ctx) {
+        if (typeof el == "function") f = el, el = null;
+        if (!el) el = ctx.el;
+        if (el) el.classList.add("indicator");
+        ctx.call(f);
+        if (el) el.classList.remove("indicator");
+    };
 }
 
 /**
@@ -147,5 +179,17 @@ function useTitle(f) {
                 title.parentNode.removeChild(title);
             }
         }
-    }
+    };
+}
+
+/**
+ * Passes a header `Boost` with the request.
+ * @param {((ctx: Context) => void)} [f]
+ * @returns {(ctx: Context) => void}
+ */
+function useBoost(f) {
+    return function (ctx) {
+        ctx.xhr.setRequestHeader("Boost", "true");
+        ctx.call(f);
+    };
 }
