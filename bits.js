@@ -1,5 +1,5 @@
 /**
- * Alias for `document.querySelector`.
+ * Alias for `document.querySelector`, mimics the feel of jQuery.
  * @param {string} s 
  * @returns {HTMLElement | null}
  */
@@ -9,7 +9,8 @@ function $(s) {
 
 /**
  * Encode the contents of a form element for use as POST payload.
- * Only supported by modern browsers.
+ * Useful for manually sending requests.
+ * @since supported by modern browsers.
  * @param {HTMLFormElement} form 
  * @returns {URLSearchParams}
  */
@@ -19,8 +20,8 @@ function encForm(form) {
 }
 
 /**
- * Encode form inputs into query string.
- * IE8+ compatible.
+ * Manual version of `encForm` supporting older browsers.
+ * @since IE8+ compatible.
  * @param {HTMLFormElement} form element which contains
  * @param {(string | [string, string])[]} keys array of either name attributes for input elements or 
  * @returns {string} query string
@@ -49,8 +50,12 @@ function _encForm(form, keys) {
  */
 
 /**
- * Swap element with response from request.
- * IE7+ compatible.
+ * A function with the functionality of `hx-get`, `hx-post`, `hx-swap`, `hx-target` and more.
+ * Allows combining with functions to get other functionality.
+ * All following functions are such combinator functions.
+ * They are meant to be used with this `swap` function,
+ * so modifying the `swap` function might have a negative impact on their functionality.
+ * @since IE7+ compatible.
  * @param {string | [string, XMLHttpRequestBodyInit]} req
  * request URL, optionally prefixed with request method like in HTTP
  * @param {HTMLElement | null} target target element,
@@ -91,7 +96,7 @@ function swap(req, target, swapMethod, f) {
 }
 
 /**
- * Do not continue if request was not successful.
+ * Do not swap if request was not successful.
  * @param {((ctx: Context) => void)} [f]
  * @returns {(ctx: Context) => void}
  */
@@ -147,7 +152,7 @@ function useSwapping(ms, f) {
 }
 
 /**
- * Gives a class `indicator` to an element while a request is ongoing.
+ * Add `indicator` class to an element or target while a request is ongoing.
  * @param {HTMLElement|null} [el]
  * @param {((ctx: Context) => void)} [f]
  * @returns {(ctx: Context) => void}
@@ -183,7 +188,7 @@ function useTitle(f) {
 }
 
 /**
- * Passes a header `Boost` with the request.
+ * Passes a header `Boost: true` with the request.
  * @param {((ctx: Context) => void)} [f]
  * @returns {(ctx: Context) => void}
  */

@@ -1,23 +1,37 @@
-#!/bin/env lua
+#!/bin/awk -f
 
-local bits = io.open("bits.js"):read"*a"
-os.remove("README.md")
-local readme = io.open("README.md", "w")
+BEGIN {
+    save_rs = RS
+    RS = "^$"
+    getline content < "README.md"
+    close(file)
+    match(content, /^(.+tablestart\-\->).+(<!\-\-tablestop.+)$/, parts)
+    RS = save_rs
+    print parts[1]
+    print "Name|Description"
+    print "----|-----------"
+}
 
-for comment, fn in bits:gmatch"(/%*%*.-%*/)\n(function.-\n})" do
-  --for line in comment:gmatch"\n%s+%*%s+([^\n]+)" do
-  --  if line:match"^@" then break end
-  --end
-  readme:write("```js\n")
-  readme:write(comment.."\n")
-  readme:write(fn)
-  readme:write("\n```\n")
-  local tmpf = os.tmpname()
-  local p = io.popen(("sh -c 'esbuild --minify > %s'"):format(tmpf), "w")
-  p:write(fn)
-  p:close()
-  readme:write("```js\n")
-  readme:write(io.open(tmpf):read"*a")
-  readme:write("```\n")
-  os.remove(tmpf)
-end
+/^\/\*\*/ { incomment = 1; n = 0; delete comment; getline; }
+/\* @/ { incomment = 0; }
+/\*\// { incomment = 0; }
+
+incomment {
+    match($0, / \* (.+)$/, a)
+    comment[n] = a[1]
+    n++
+}
+
+/^function/ {
+    printf "|"
+    match($0, /function (.+)\(/, a)
+    printf "`" a[1] "`|"
+    for (i = 0; i < n; i++) {
+        printf comment[i] " "
+    }
+    print ""
+}
+
+END {
+    print parts[2]
+}
